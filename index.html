@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>SDGs性別平權</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f0e68c; margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #8b4513; color: white; }
+        h1 { margin: 0; font-size: 24px; }
+        #score-board { font-size: 20px; font-weight: bold; }
+        
+        #map { position: relative; height: 80vh; background: #d2b48c; }
+        .house { position: absolute; font-size: 50px; cursor: pointer; transition: 0.3s; }
+        .house:hover { transform: scale(1.1); }
+        
+        #modal { display: none; position: fixed; top: 20%; left: 30%; width: 40%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10; }
+        .option-btn { display: block; width: 100%; margin: 10px 0; padding: 10px; cursor: pointer; }
+        
+        #result-screen { display: none; text-align: center; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SDGs性別平權</h1>
+    <div id="score-board">答對題數：<span id="score">0</span> / 10</div>
+</header>
+
+<div id="map">
+    </div>
+
+<div id="modal">
+    <h3 id="question">問題內容</h3>
+    <div id="options"></div>
+</div>
+
+<div id="result-screen">
+    <h2 id="result-msg"></h2>
+    <div id="action-btn-container"></div>
+</div>
+
+<script>
+    const questions = [
+        { q: "SDG 5 的核心目標是什麼？", a: ["性別平權", "氣候行動", "消除貧窮"], correct: 0 },
+        { q: "下列何者不屬於性別刻板印象？", a: ["男生應該勇敢，女生應該溫柔", "任何人都可以選擇自己的職業", "女生不適合讀理工科"], correct: 1 },
+        { q: "薪資差距是性別不平權的一種表現嗎？", a: ["是", "否", "不一定"], correct: 0 },
+        { q: "關於性別平權，正確的觀念是？", a: ["給予男性特權", "給予女性特權", "追求機會與權利的實質平等"], correct: 2 },
+        { q: "家務分工應該由誰負責？", a: ["女性", "男性", "家庭成員共同分擔"], correct: 2 },
+        { q: "關於性騷擾，下列敘述何者正確？", a: ["只有女性會受害", "無論性別都可能受害", "這是個人的小玩笑"], correct: 1 },
+        { q: "玻璃天花板效應是指？", a: ["女性升遷受到無形阻礙", "窗戶太髒", "辦公室裝潢"], correct: 0 },
+        { q: "全球有多少國家實現了完全的性別平等？", a: ["目前還沒有國家完全實現", "所有國家都實現了", "僅少數已開發國家"], correct: 0 },
+        { q: "尊重不同性別認同是平權的一環嗎？", a: ["是", "否", "看情況"], correct: 0 },
+        { q: "性別平權有助於社會發展嗎？", a: ["無關", "有，能發揮每個人潛力", "有，因為人口會增加"], correct: 1 }
+    ];
+
+    let score = 0;
+    let answeredCount = 0;
+    const map = document.getElementById('map');
+    const scoreEl = document.getElementById('score');
+
+    // 隨機生成茅草屋
+    for(let i=0; i<10; i++) {
+        const house = document.createElement('div');
+        house.className = 'house';
+        house.innerHTML = '🛖';
+        house.style.left = Math.random() * 80 + 10 + '%';
+        house.style.top = Math.random() * 60 + 10 + '%';
+        house.onclick = () => showQuestion(i, house);
+        map.appendChild(house);
+    }
+
+    function showQuestion(index, element) {
+        element.style.display = 'none'; // 點過就消失
+        const q = questions[index];
+        const modal = document.getElementById('modal');
+        document.getElementById('question').innerText = q.q;
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        
+        q.a.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(i, q.correct);
+            optionsDiv.appendChild(btn);
+        });
+        modal.style.display = 'block';
+    }
+
+    function checkAnswer(chosen, correct) {
+        if(chosen === correct) {
+            score++;
+            scoreEl.innerText = score;
+        }
+        answeredCount++;
+        document.getElementById('modal').style.display = 'none';
+        
+        if(answeredCount === 10) {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        map.style.display = 'none';
+        document.getElementById('modal').style.display = 'none';
+        const resScreen = document.getElementById('result-screen');
+        resScreen.style.display = 'block';
+        
+        if(score >= 8) {
+            document.getElementById('result-msg').innerText = `太棒了！答對 ${score} 題！`;
+            document.getElementById('action-btn-container').innerHTML = `<button onclick="location.href='level2.html'">前往下一關</button>`;
+        } else {
+            document.getElementById('result-msg').innerText = `答對 ${score} 題，再加油！`;
+            document.getElementById('action-btn-container').innerHTML = `<button onclick="location.reload()">重新挑戰</button>`;
+        }
+    }
+</script>
+
+</body>
+</html>
