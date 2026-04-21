@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>SDGs 性別平權小達人證書</title>
+    <style>
+        body { 
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif; 
+            background-color: #f4f4f4; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 50px;
+        }
+
+        /* 證書外框 */
+        #certificate {
+            background: white;
+            width: 800px;
+            padding: 60px;
+            border: 10px double #d35400;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 { font-size: 40px; color: #d35400; }
+        .name-display { font-size: 32px; border-bottom: 2px solid #333; display: inline-block; min-width: 300px; margin: 20px 0; }
+
+        /* 輸入與按鈕區域 (列印時會隱藏) */
+        #controls { margin-top: 30px; text-align: center; }
+        input { padding: 10px; font-size: 18px; margin-bottom: 10px; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; background: #d35400; color: white; border: none; border-radius: 5px; }
+
+        /* 列印模式設定 */
+        @media print {
+            #controls { display: none; } /* 列印時隱藏控制區 */
+            body { background: white; padding: 0; }
+            #certificate { box-shadow: none; border: none; } /* 列印時去除陰影 */
+        }
+    </style>
+</head>
+<body>
+
+<div id="certificate">
+    <h1>學習證書</h1>
+    <p>恭喜完成所有挑戰，特此頒發：</p>
+    <h2 id="display-name">__________</h2>
+    <p>稱號：<strong>SDGs 性別平權小達人</strong></p>
+    <p style="margin-top: 50px;">日期：<span id="date"></span></p>
+</div>
+
+<div id="controls">
+    <input type="text" id="name-input" placeholder="請在此輸入您的姓名" oninput="updateName()">
+    <br>
+    <button onclick="window.print()">下載 / 列印證書</button>
+</div>
+
+<script>
+    // 即時更新姓名顯示
+    function updateName() {
+        const name = document.getElementById('name-input').value;
+        document.getElementById('display-name').innerText = name || "__________";
+    }
+
+    // 顯示今日日期
+    const today = new Date();
+    document.getElementById('date').innerText = today.toLocaleDateString();
+</script>
+
+</body>
+</html>

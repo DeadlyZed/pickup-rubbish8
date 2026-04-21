@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>SDGs性別平權-情境題</title>
+    <style>
+        body { margin: 0; font-family: 'Arial', sans-serif; height: 100vh; overflow: hidden; 
+               background: linear-gradient(to bottom, #87CEEB 20%, #FFD700 100%); }
+        
+        /* 頁首 */
+        header { display: flex; justify-content: space-between; padding: 20px; background: rgba(255,255,255,0.7); }
+        h1 { margin: 0; font-size: 24px; color: #d35400; }
+        #score-board { font-size: 20px; font-weight: bold; }
+
+        /* 遊樂園場景 */
+        #game-area { height: 70vh; position: relative; }
+        .flower { position: absolute; font-size: 50px; cursor: pointer; transition: 0.3s; }
+        .flower:hover { transform: scale(1.2); }
+
+        /* 拖曳區 */
+        #drop-zone-container { display: flex; justify-content: space-around; padding: 20px; }
+        .box { width: 40%; height: 100px; border: 3px dashed #333; display: flex; justify-content: center; align-items: center; font-weight: bold; background: rgba(255,255,255,0.5); }
+
+        /* 項目卡片 */
+        #items-container { height: 100px; display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .item { padding: 10px; background: #fff; border: 1px solid #ccc; cursor: grab; border-radius: 5px; }
+
+        /* 結算頁面 */
+        #result-modal { display: none; position: fixed; top: 30%; left: 30%; width: 40%; background: white; padding: 30px; text-align: center; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SDGs性別平權-情境題</h1>
+    <div id="score-board">答對題數：<span id="score">0</span> / 6</div>
+</header>
+
+<div id="game-area">
+    </div>
+
+<div id="drop-zone-container">
+    <div class="box" ondrop="drop(event)" ondragover="allowDrop(event)" data-type="equal">性別平等</div>
+    <div class="box" ondrop="drop(event)" ondragover="allowDrop(event)" data-type="unequal">性別不平等</div>
+</div>
+
+<div id="items-container"></div>
+
+<div id="result-modal">
+    <h2 id="result-text"></h2>
+    <div id="result-btn"></div>
+</div>
+
+<script>
+    const gameData = [
+        [ { text: "公司規定男職員薪水比女職員高", isEqual: false }, { text: "兩人共同分擔家務", isEqual: true } ],
+        [ { text: "認為護理師一定是女性", isEqual: false }, { text: "鼓勵男孩子表達情緒", isEqual: true } ],
+        [ { text: "女生不適合擔任工程師", isEqual: false }, { text: "男女享有同等升遷機會", isEqual: true } ]
+    ];
+
+    let score = 0;
+    let placedCount = 0;
+    const gameArea = document.getElementById('game-area');
+    const itemsContainer = document.getElementById('items-container');
+
+    // 生成花朵
+    gameData.forEach((group, index) => {
+        const flower = document.createElement('div');
+        flower.className = 'flower';
+        flower.innerHTML = '🌸';
+        flower.style.left = (20 + index * 30) + '%';
+        flower.style.bottom = (Math.random() * 20) + 10 + '%';
+        flower.onclick = () => {
+            spawnItems(group);
+            flower.style.display = 'none';
+        };
+        gameArea.appendChild(flower);
+    });
+
+    function spawnItems(group) {
+        group.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.draggable = true;
+            div.innerText = item.text;
+            div.dataset.isEqual = item.isEqual;
+            div.ondragstart = (e) => e.dataTransfer.setData("text", e.target.dataset.isEqual);
+            itemsContainer.appendChild(div);
+        });
+    }
+
+    function allowDrop(e) { e.preventDefault(); }
+
+    function drop(e) {
+        e.preventDefault();
+        const isEqual = e.dataTransfer.getData("text");
+        const targetType = e.target.dataset.type;
+
+        if ((isEqual === 'true' && targetType === 'equal') || (isEqual === 'false' && targetType === 'unequal')) {
+            score++;
+            document.getElementById('score').innerText = score;
+        }
+        
+        e.target.appendChild(document.createElement('div')).innerText = "已放置"; // 簡單標示
+        placedCount++;
+        if(placedCount === 6) showResult();
+    }
+
+    function showResult() {
+        const modal = document.getElementById('result-modal');
+        const text = document.getElementById('result-text');
+        const btn = document.getElementById('result-btn');
+        modal.style.display = 'block';
+
+        if(score >= 5) {
+            text.innerText = "等級：平權達人！";
+            btn.innerHTML = `<button onclick="location.href='certificate.html'">下載學習證書</button>`;
+        } else if (score >= 3) {
+            text.innerText = "等級：進步中！";
+            btn.innerHTML = `<button onclick="location.reload()">再次挑戰</button>`;
+        } else {
+            text.innerText = "等級：再加油！";
+            btn.innerHTML = `<button onclick="location.reload()">再次挑戰</button>`;
+        }
+    }
+</script>
+
+</body>
+</html>
